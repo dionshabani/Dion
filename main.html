@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="quiz-container">
+    <h1>Lojë Kuizi nga Dion Shabani</h1>
+    <h2>Mos kliko dy her mbi përgjigje dhe pasi të klikosh në "vazhdo" ska kthim mbrapa</h2>
+    <div id="question-container"></div>
+    <div id="answer-buttons" class="btn-container"></div>
+    <button onclick="nextQuestion()" id="next-button" class="btn" style="display:none;">Vazhdo</button>
+    <div id="result-container" style="display:none;">
+        <h2>Your Score:</h2>
+        <p id="score"></p>
+    </div>
+</div>
+
+<script>
+    const quizContainer = document.getElementById('quiz-container');
+    const questionContainer = document.getElementById('question-container');
+    const answerButtonsContainer = document.getElementById('answer-buttons');
+    const nextButton = document.getElementById('next-button');
+    const resultContainer = document.getElementById('result-container');
+    const scoreDisplay = document.getElementById('score');
+    
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let incorrectAnswers = [];
+
+const questions = [
+    {
+        question: 'Cila vitaminë ka rol kryesorë ne koagulimin e gjakut?',
+        answers: [
+            { text: 'Vitamina K', correct: true },
+            { text: 'Vitamina C', correct: false },
+            { text: 'Vitamina D', correct: false },
+            { text: 'Vitamina B', correct: false }
+        ],
+    },
+    {
+        question: 'Nëse një kafshë përshkruhet si tetrapter, atëherë ajo ka?',
+        answers: [
+            { text: 'Kater kembe', correct: false },
+            { text: 'Kater dhembe', correct: false },
+            { text: 'Kater krahe', correct: true },
+            { text: 'Kater sy', correct: false }
+        ],
+    },
+    {
+        question: 'Në cilin vit u nënshkrua Deklarata e Pavarësisë së Shqipërisë?',
+        answers: [
+            { text: '1908', correct: false },
+            { text: '1945', correct: false },
+            { text: '1920', correct: false },
+            { text: '1912', correct: true }
+        ],
+    },
+    {
+        question: 'Cili është oqeani më i thellë në botë?',
+        answers: [
+            { text: 'Oqeani Atlantik', correct: false },
+            { text: 'Oqeani Paqësor', correct: true },
+            { text: ' Oqeani Indian', correct: false },
+            { text: 'Oqeani Arktik', correct: false }
+        ],
+    },
+    {
+        question: 'Këngëtari më i shitur në botë është:',
+        answers: [
+            { text: 'Elvis Presley', correct: false },
+            { text: 'Michael Jackson', correct: false },
+            { text: 'Madonna', correct: true },
+            { text: 'The Beatles', correct: false }
+        ],
+    },
+    {
+        question: 'Në cilin vend u zhvillua Beteja e Vaterlos?',
+        answers: [
+            { text: 'Francë', correct: true },
+            { text: 'Belgjikë', correct: false },
+            { text: 'Itali', correct: false },
+            { text: 'Holandë', correct: false }
+        ],
+    },
+    {
+        question: 'Cili është emri i qytetit më të populluar në botë sipas numrit të banorëve',
+        answers: [
+            { text: 'Pekin', correct: false },
+            { text: 'Tokyo', correct: true },
+            { text: 'Delhi', correct: false },
+            { text: 'Shangai', correct: false }
+        ],
+    },
+    {
+        question: 'Cila është vendlindja e artistit Leonardo da Vinci?',
+        answers: [
+            { text: 'Milano', correct: false },
+            { text: 'Florencë', correct: true },
+            { text: 'Roma', correct: false },
+            { text: 'Venecia ', correct: false }
+        ],
+    },
+    {
+        question: 'Cila është kafsha më e madhe në botë?',
+        answers: [
+            { text: 'Elefanti', correct: false },
+            { text: 'Rinoceronti', correct: false },
+            { text: 'Balena blu', correct: true },
+            { text: 'Gjirafa ', correct: false }
+        ],
+    },
+    {
+        question: 'Cila është kohëzgjatja e një mandate të Presidentit të Shteteve të Bashkuara?',
+        answers: [
+            { text: '4 vjet', correct: true },
+            { text: '6 vjet', correct: false },
+            { text: '8 vjet', correct: false },
+            { text: '10 vjet ', correct: false }
+        ],
+    },
+    {
+        question: 'Një produkt kushton 1200 euro dhe ka rënë në zbritje 15%. Gjeni çmimin e produktit pas zbritjes.',
+        answers: [
+            { text: '1010', correct: false },
+            { text: '2120', correct: false },
+            { text: '2110', correct: false },
+            { text: '1020 ', correct: true }
+        ],
+    },
+    {
+        question: 'Një vlerë nga 80 shkon në 96. Gjeni përqindjen e rritjes?',
+        answers: [
+            { text: '30%', correct: false },
+            { text: '15%', correct: false },
+            { text: '20%', correct: true },
+            { text: '10%', correct: false }
+        ],
+    },
+    {
+        question: 'Kush është nëna e vajzës së nënës së nënës së Duas?',
+        answers: [
+            { text: 'Motra Duas', correct: false },
+            { text: 'Nëna Duas', correct: false },
+            { text: 'Halla Duas', correct: false },
+            { text: 'Gjyshja Duas', correct: true }
+        ],
+    },
+    {
+        question: 'Mirsadi dëshiron t’i përgatisë 24 kifle për festën e ditëlindjes së tij. Për ti përgatitur 6 kifle atij i duhen 2 vezë. Vezët shiten në kuti gjashtëshe. Sa kuti duhet të blejë Mirsadi?',
+        answers: [
+            { text: '1', correct: false },
+            { text: '2', correct: true },
+            { text: '3', correct: false },
+            { text: '4', correct: false }
+        ],
+    },
+    {
+        question: 'Kush e vrau Esat Pashe Toptanin',
+        answers: [
+            { text: 'Avni Rrustemi', correct: true },
+            { text: 'Ahmet Zogu', correct: false },
+            { text: 'Azem Galica', correct: false },
+            { text: 'Enver Hoxha', correct: false }
+        ],
+    },
+    {
+        question: 'Cila është formula e Acidit Sulfurik',
+        answers: [
+            { text: 'H20', correct: false },
+            { text: 'H2', correct: false },
+            { text: 'H2SO4', correct: true },
+            { text: 'KMnO4', correct: false }
+        ],
+    },
+    {
+        question: 'Adolf Hitler lindi në',
+        answers: [
+            { text: 'Gjermani', correct: false },
+            { text: 'Zvicër', correct: false },
+            { text: 'Holandë', correct: false },
+            { text: 'Austri', correct: true }
+        ],
+    },
+    {
+        question: 'Sa yje ka falmuri Amerikan?',
+        answers: [
+            { text: '55', correct: false },
+            { text: '50', correct: true },
+            { text: '40', correct: false },
+            { text: '45 ', correct: false }
+        ],
+    },
+    {
+        question: 'Ne cilin vit vdiq Ibrahim Rugova?',
+        answers: [
+            { text: '2007', correct: false },
+            { text: '2006', correct: true },
+            { text: '2005', correct: false },
+            { text: '2008 ', correct: false }
+        ],
+    },
+    {
+        question: 'Sa ditë ka një vit normal',
+        answers: [
+            { text: '365', correct: true },
+            { text: '364', correct: false },
+            { text: '363', correct: false },
+            { text: '366', correct: false }
+        ],
+    },
+];
+
+function startQuiz() {
+    currentQuestionIndex = 0;
+    score = 0;
+    incorrectAnswers = [];
+    resultContainer.style.display = 'none';
+    nextButton.style.display = 'none';
+    showQuestion(questions[currentQuestionIndex]);
+}
+
+function showQuestion(question) {
+    questionContainer.innerText = question.question;
+    clearAnswerButtons();
+    question.answers.forEach(answer => {
+        const button = document.createElement('button');
+        button.innerText = answer.text;
+        button.classList.add('btn');
+        button.addEventListener('click', () => selectAnswer(answer));
+        answerButtonsContainer.appendChild(button);
+    });
+}
+
+function clearAnswerButtons() {
+    while (answerButtonsContainer.firstChild) {
+        answerButtonsContainer.removeChild(answerButtonsContainer.firstChild);
+    }
+}
+
+function selectAnswer(answer) {
+    const correct = answer.correct;
+    if (correct) {
+        score++;
+    } else {
+        // If the answer is incorrect, add it to the list of incorrect answers
+        incorrectAnswers.push({
+            question: questions[currentQuestionIndex].question,
+            selectedAnswer: answer.text,
+            correctAnswer: questions[currentQuestionIndex].answers.find(a => a.correct).text,
+        });
+    }
+
+    nextButton.style.display = 'block';
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        showQuestion(questions[currentQuestionIndex]);
+        nextButton.style.display = 'none';
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    resultContainer.style.display = 'block';
+    scoreDisplay.innerText = `${score} out of ${questions.length}`;
+
+    // Display the list of incorrect answers
+    if (incorrectAnswers.length > 0) {
+        const mistakesContainer = document.createElement('div');
+        mistakesContainer.innerHTML = '<h2>Gabimet:</h2>';
+        incorrectAnswers.forEach(mistake => {
+            const mistakeItem = document.createElement('p');
+            mistakeItem.innerHTML = `<strong>${mistake.question}</strong><br>Përgjigjja jote: ${mistake.selectedAnswer}<br>Përgjigjja e saktë: ${mistake.correctAnswer}<br>`;
+            mistakesContainer.appendChild(mistakeItem);
+        });
+        resultContainer.appendChild(mistakesContainer);
+    }
+}
+
+// Start the quiz when the page loads
+startQuiz();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+body {
+    background-color: aqua;
+    backdrop-filter: invert(40%);
+}
+button {
+    background: linear-gradient(to right, rgb(47, 0, 255), rgb(0, 113, 128), rgb(0, 255, 179));
+    font-weight: bold;
+}
+
